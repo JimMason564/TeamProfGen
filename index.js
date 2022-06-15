@@ -2,7 +2,7 @@
 const inquirer = require('inquirer');
 const fs = require('fs')
 const generateHTML = require("./generateHTML");
-
+const Employee = require('./lib.Employee.js')
 const Manager = require('./lib.Manager.js')
 const Engineer = require('./lib.Engineer.js')
 const Intern = require('./lib.Intern.js')
@@ -32,6 +32,22 @@ function managerEl () {
   message: "What is this manager's office number"
 }
   ])
+  .then((res, err) => {
+    if (err) console.error(err);
+    const manager= new Manager(
+      res.name,
+      res.id,
+      res.email,
+      res.managerOfficenumber
+    );
+    employees.push(manager);
+    console.log(employees);
+    if (res.nextEmp) {
+      newMember();
+    } else {
+      renderTeam();
+    }
+  });
 }
 
 function engineerEl() {
@@ -57,6 +73,22 @@ function engineerEl() {
       message: `Please enter a link to ${this.engineerName}'s GitHub Account`
     }
       ])
+      .then((res, err) => {
+        if (err) console.error(err);
+        const engineer= new Engineer(
+          res.name,
+          res.id,
+          res.email,
+          res.engineerGithub
+        );
+        employees.push(engineer);
+        console.log(employees);
+        if (res.nextEmp) {
+          newMember();
+        } else {
+          renderTeam();
+        }
+      });
 }
 
 function internEl() {
@@ -78,11 +110,27 @@ function internEl() {
     },
     {
       type: "input",
-      name: "internerOfficenumber",
+      name: "internSchool",
       message: `What school is ${this.internName} currently attending?`
     }
       ])
+      .then((res, err) => {
+        if (err) console.error(err);
+        const intern = new Intern(
+          res.name,
+          res.id,
+          res.email,
+          res.school
+        );
+        employees.push(intern);
+        console.log(employees);
+        if (res.nextEmp) {
+          newMember();
+        } else {
+          renderTeam();
+        }
+      });
 }
-//questions for different roles
+
 
 //print to html
