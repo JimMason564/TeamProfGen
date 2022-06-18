@@ -1,13 +1,22 @@
 
 const inquirer = require('inquirer');
 const fs = require('fs')
-const generateHTML = require("./generateHTML");
-const Employee = require('./lib.Employee.js')
-const Manager = require('./lib.Manager.js')
-const Engineer = require('./lib.Engineer.js')
-const Intern = require('./lib.Intern.js')
-//init function to start everything
+const generateHTML = require("./src/generate");
 
+const Manager = require('./lib/Manager.js')
+const Engineer = require('./lib/Engineer.js')
+const Intern = require('./lib/Intern.js')
+const employees = [ ]
+const path = require("path")
+
+//Figure out where dist is in directory structure
+const DIST_DIR = path.resolve(__dirname, 'dist');
+
+//Add team HTML to dist
+const distPath = path.join(DIST_DIR, 'team.html');
+
+//init function to start everything
+function init(){
 //menu with prompts for different roles
 function managerEl () {
   inquirer.prompt ([
@@ -35,19 +44,37 @@ function managerEl () {
   .then((res, err) => {
     if (err) console.error(err);
     const manager= new Manager(
-      res.name,
-      res.id,
-      res.email,
+      res.managerName,
+      res.managerID,
+      res.managerEmail,
       res.managerOfficenumber
     );
     employees.push(manager);
     console.log(employees);
-    if (res.nextEmp) {
-      newMember();
-    } else {
-      renderTeam();
-    }
+      createTeam()
   });
+}
+
+function createTeam() {
+  inquirer.prompt ([
+    {
+    type: "list",
+      name: "choice",
+      message: "What type of team member would you like to add?",
+      choices: ["Engineer","Intern", "Team is complete"]
+    }
+  ])
+  .then ((res)=> {
+    if (res.choice === "Engineer"){
+      engineerEl()
+    }
+    else if(res.choice === "Intern") {
+      internEl()
+    }
+    else {
+      renderTeam()
+    }
+  })
 }
 
 function engineerEl() {
@@ -69,25 +96,21 @@ function engineerEl() {
     },
     {
       type: "input",
-      name: "engineererGithub",
-      message: `Please enter a link to ${this.engineerName}'s GitHub Account`
+      name: "engineerGithub",
+      message: `Please enter a link to this engineer's GitHub Account`
     }
       ])
       .then((res, err) => {
         if (err) console.error(err);
         const engineer= new Engineer(
-          res.name,
-          res.id,
-          res.email,
+          res.engineerName,
+          res.engineerID,
+          res.engineerEmail,
           res.engineerGithub
         );
         employees.push(engineer);
         console.log(employees);
-        if (res.nextEmp) {
-          newMember();
-        } else {
-          renderTeam();
-        }
+        createTeam();
       });
 }
 
@@ -111,26 +134,30 @@ function internEl() {
     {
       type: "input",
       name: "internSchool",
-      message: `What school is ${this.internName} currently attending?`
+      message: `What school are they currently attending?`
     }
       ])
       .then((res, err) => {
         if (err) console.error(err);
         const intern = new Intern(
-          res.name,
-          res.id,
-          res.email,
-          res.school
+          res.internName,
+          res.internID,
+          res.internEmail,
+          res.internSchool
         );
         employees.push(intern);
         console.log(employees);
-        if (res.nextEmp) {
-          newMember();
-        } else {
-          renderTeam();
-        }
+        createTeam();
       });
 }
 
+function renderTeam() {
+  if (!fs.existsSync(DIST_DIR)) {
+    fs.mkdirSync(DIST_DIR);
+  }
+  fs.writeFileSync(distPath, generateHTML(employees), 'utf-8');
+}
+managerEl();
+}
 
-//print to html
+init()
