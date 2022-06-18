@@ -5,7 +5,7 @@ This project runs in the integrated terminal via Node. Once started, the user wi
 
 
 ## Screenshot
-![Screenshot](<img width="1138" alt="Screen Shot 2022-06-18 at 8 57 26 AM" src="https://user-images.githubusercontent.com/100049308/174446780-5e13deb1-9109-437e-997e-abeb100dd041.png">)
+![Screenshot](https://github.com/JimMason564/TeamProfGen/blob/main/lib/screenshot.jpeg)
 
 
 ## Links
